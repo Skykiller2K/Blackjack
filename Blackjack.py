@@ -220,4 +220,4 @@ while joueur1.gameover == False:
                 print("""\nMauvaise saisine ! Saisissez "1" pour piocher une carte supplémentaire ou "2" pour rester""" )
         if joueur1.valeurtotalemain != 0 :
             croupier.pioche()
-            print("pouet")
+            print(pouet)
