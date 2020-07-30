@@ -42,7 +42,7 @@ class Joueur (object):
         self.valeurtotalemain = 0 
         self.gameover = False
         self.fintourdepioche =  False
-        self.blackjack = blackjack
+        self.blackjack = blackjack         
     def majvaleurmain(self): 
         """ 
             Méthode qui actualise la valeur de la main après une pioche.
@@ -53,8 +53,7 @@ class Joueur (object):
         while self.valeurtotalemain > 21 and 11 in self.valeursmain:
             self.valeursmain.remove(11)
             self.valeursmain.append(1)
-            self.valeurtotalemain = sum(self.valeursmain)
-    
+            self.valeurtotalemain = sum(self.valeursmain)    
     def firstpioche(self):
         cartepiochée1=random.choice(list(paquet.items()))
         del paquet[cartepiochée1[0]]
@@ -169,6 +168,9 @@ while joueur1.gameover == False:
           "Roi de coeur":10, "Roi de trèfle":10, "Roi de pique":10, "Roi de carreau":10}
     joueur1.fintourdepioche=False    
     print ("\nNouvelle partie !")
+    if joueur1.argent == 0 :
+        input ("\nVous n'avez plus d'argent ! La Banque est généreuse vous redonne 100 euros. Appuyez sur Entrée pour continuer")
+        joueur1.argent += 100   
     while True :
         try:
             joueur1.mise=input("\nVous avez %s euros, combien voulez-vous miser ? " %(joueur1.argent))        
@@ -220,4 +222,3 @@ while joueur1.gameover == False:
                 print("""\nMauvaise saisine ! Saisissez "1" pour piocher une carte supplémentaire ou "2" pour rester""" )
         if joueur1.valeurtotalemain != 0 :
             croupier.pioche()
-testtest
