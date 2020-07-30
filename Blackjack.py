@@ -169,7 +169,7 @@ while joueur1.gameover == False:
     joueur1.fintourdepioche=False    
     print ("\nNouvelle partie !")
     if joueur1.argent == 0 :
-        input ("\nVous n'avez plus d'argent ! La Banque est généreuse vous redonne 100 euros. Appuyez sur Entrée pour continuer")
+        input ("\nVous n'avez plus d'argent ! La Banque est généreuse et vous redonne 100 euros. Appuyez sur Entrée pour continuer")
         joueur1.argent += 100   
     while True :
         try:
