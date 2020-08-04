@@ -24,6 +24,7 @@ def dderejouer ():
             joueur1.valeurtotalemain = 0
             joueur1.mise = 0
             joueur1.blackjack = False
+            joueur1.assurance = False
             croupier.main=[]
             croupier.valeursmain=[]
             croupier.valeurtotalemain = 0 
@@ -34,7 +35,7 @@ def dderejouer ():
             print("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
 
 class Joueur (object):
-    def __init__(self, argent=100, mise=0, blackjack=False):
+    def __init__(self, argent=100, mise=0, blackjack=False, assurance=False):
         self.argent = argent
         self.mise = mise
         self.main = []
@@ -42,7 +43,8 @@ class Joueur (object):
         self.valeurtotalemain = 0 
         self.gameover = False
         self.fintourdepioche =  False
-        self.blackjack = blackjack         
+        self.blackjack = blackjack
+        self.assurance = assurance         
     def majvaleurmain(self): 
         """ 
             Méthode qui actualise la valeur de la main après une pioche.
@@ -75,9 +77,14 @@ class Joueur (object):
             clean(platform.system())
             print("\nVous avez pioché la carte", cartepiochée[0])           
             if self.valeurtotalemain > 21 :
-                self.argent -= self.mise
-                print ("\nCramé ! La valeur de votre main est de %s.\n\nVous avez perdu le montant de votre mise de %s euros, votre cagnotte est de %s euros." %(self.valeurtotalemain, self.mise, self.argent))
-                dderejouer()          
+                if self.assurance :
+                    self.argent -= 1.5*self.mise
+                    print ("\nCramé ! La valeur de votre main est de %s.\n\nVous avez perdu %s euros (les %s euros de votre mise + les %s euros de l'assurance), votre cagnotte est de %s euros." %(self.valeurtotalemain, 1.5*self.mise, self.mise, 0.5*self.mise, self.argent))
+                    dderejouer()
+                else:
+                    self.argent -= self.mise
+                    print ("\nCramé ! La valeur de votre main est de %s.\n\nVous avez perdu le montant de votre mise de %s euros, votre cagnotte est de %s euros." %(self.valeurtotalemain, self.mise, self.argent))
+                    dderejouer()          
             elif self.valeurtotalemain == 21:
                 input ("\nBravo la valeur de votre main est de 21. Au croupier de jouer. Appuyez sur Entrée pour continuer")
                 self.fintourdepioche = True                       
@@ -113,9 +120,12 @@ class Banque (Joueur):
         clean(platform.system())
         print ("\nLe croupier dévoile sa deuxième carte. Sa main comporte les cartes suivantes %s pour une valeur totale de %s" %(croupier.main, croupier.valeurtotalemain))
         if self.valeurtotalemain == 21 and len(self.main) == 2: 
-            self.blackjack=True           
-            joueur1.argent -= joueur1.mise            
-            print ("\nPerdu ! Le croupier fait un BLACKJACK !\n\nVous perdez votre mise de %s euros, votre cagnotte est de %s euros" %(joueur1.mise, joueur1.argent))            
+            self.blackjack=True
+            if joueur1.assurance:
+                print ("\nPerdu ! Le croupier fait un BLACKJACK !\n\nComme vous avez pris l'assurance, vous ne perdez pas d'argent ! Votre cagnotte est de %s euros" %(joueur1.argent))
+            else:           
+                joueur1.argent -= joueur1.mise            
+                print ("\nPerdu ! Le croupier fait un BLACKJACK !\n\nVous perdez votre mise de %s euros, votre cagnotte est de %s euros" %(joueur1.mise, joueur1.argent))            
         if not self.blackjack:
             if self.valeurtotalemain < 17:
                 input ("\nAppuyez sur Entrée pour lancer le tour de pioche du croupier")   
@@ -130,21 +140,37 @@ class Banque (Joueur):
                     print ("Le croupier a fini son tour de pioche, sa main comporte les cartes suivantes:", self.main)
                     input ("\nAppuyez sur Entrée pour afficher le résultat de la partie ")
             if self.valeurtotalemain > 21:
-                clean(platform.system()) 
-                joueur1.argent += joueur1.mise
-                print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\nVous avez gagné le montant de votre mise de %s euros, votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, joueur1.argent))                       
+                clean(platform.system())
+                if joueur1.assurance:
+                    joueur1.argent += 0.5*joueur1.mise
+                    print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\nVous avez gagné %s euros (les %s euros de votre mise - les %s euros de l'assurance qui n'a pas été utilisée puisque le croupier n'a pas fait BLACKJACK), votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, 0.5*joueur1.mise, joueur1.mise, 0.5*joueur1.mise, joueur1.argent))
+                else: 
+                    joueur1.argent += joueur1.mise
+                    print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\nVous avez gagné le montant de votre mise de %s euros, votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, joueur1.argent))                       
             else:
                 if self.valeurtotalemain < joueur1.valeurtotalemain :
                     clean(platform.system())
-                    joueur1.argent += joueur1.mise 
-                    print ("Bravo vous avez gagné ! La main du croupier comporte les cartes %s pour une valeur de %s inférieure à la vôtre (%s).\n\nVous avez gagné le montant de votre mise soit %s euros, votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.valeurtotalemain, joueur1.mise, joueur1.argent))                    
+                    if joueur1.assurance:
+                        joueur1.argent += 0.5*joueur1.mise
+                        print ("Bravo vous avez gagné ! La main du croupier comporte les cartes %s pour une valeur de %s inférieure à la vôtre (%s).\n\nVous avez gagné %s euros (les %s euros de votre mise - les %s euros de l'assurance qui n'a pas été utilisée puisque le croupier n'a pas fait BLACKJACK), votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.valeurtotalemain, 0.5*joueur1.mise, joueur1.mise, 0.5*joueur1.mise, joueur1.argent))
+                    else :
+                        joueur1.argent += joueur1.mise 
+                        print ("Bravo vous avez gagné ! La main du croupier comporte les cartes %s pour une valeur de %s inférieure à la vôtre (%s).\n\nVous avez gagné le montant de votre mise soit %s euros, votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.valeurtotalemain, joueur1.mise, joueur1.argent))                    
                 elif self.valeurtotalemain == joueur1.valeurtotalemain :
-                    clean(platform.system())                 
-                    print ("Egalité ! La main du croupier comporte les cartes %s pour une valeur égale à la vôtre (%s).\n\nVous conservez le montant de votre mise (%s), votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, joueur1.argent))                    
+                    clean(platform.system())
+                    if joueur1.assurance:
+                        joueur1.argent -= 0.5*joueur1.mise
+                        print ("Egalité ! La main du croupier comporte les cartes %s pour une valeur égale à la vôtre (%s).\n\nVous conservez le montant de votre mise (%s) mais perdez celui de l'assurance (%s) puisque le croupier n'a pas fait BLACKJACK. Votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, 0.5*joueur1.mise, joueur1.argent))
+                    else:                
+                        print ("Egalité ! La main du croupier comporte les cartes %s pour une valeur égale à la vôtre (%s).\n\nVous conservez le montant de votre mise (%s), votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, joueur1.argent))                    
                 else:
                     clean(platform.system())
-                    joueur1.argent -= joueur1.mise 
-                    print ("Perdu ! La main du croupier (%s) est supérieur à la votre (%s).\n\nVous avez perdu le montant de votre mise de %s euros, votre cagnotte est de %s euros." %(self.valeurtotalemain, joueur1.valeurtotalemain, joueur1.mise, joueur1.argent))                    
+                    if joueur1.assurance:
+                        joueur1.argent -= 1.5*joueur1.mise
+                        print ("Perdu ! La main du croupier (%s) est supérieur à la votre (%s).\n\nVous avez perdu %s euros (le montant de votre mise de %s euros + le montant de l'assurance (%s euros) puisque le croupier n'a pas fait BLACKCJACK). Votre cagnotte est de %s euros." %(self.valeurtotalemain, joueur1.valeurtotalemain, 1.5*joueur1.mise, joueur1.mise, 0.5*joueur1.mise, joueur1.argent))                        
+                    else:
+                        joueur1.argent -= joueur1.mise 
+                        print ("Perdu ! La main du croupier (%s) est supérieur à la votre (%s).\n\nVous avez perdu le montant de votre mise de %s euros, votre cagnotte est de %s euros." %(self.valeurtotalemain, joueur1.valeurtotalemain, joueur1.mise, joueur1.argent))                    
         dderejouer()
 joueur1=Joueur()
 croupier=Banque()
@@ -202,8 +228,19 @@ while joueur1.gameover == False:
             dderejouer()
         else:
             joueur1.argent += int(1.5*joueur1.mise)
-            print ("\n Voici la main du croupier : %s. Bravo vous gagnez avec un BLACKJACK !\n\nVous remportez 1,5 fois votre mise soit %s euros, votre cagnotte est de %s euros" %(croupier.main, int(1.5*joueur1.mise), joueur1.argent))
+            print ("\nVoici la main du croupier : %s. Bravo vous gagnez avec un BLACKJACK !\n\nVous remportez 1,5 fois votre mise soit %s euros, votre cagnotte est de %s euros" %(croupier.main, int(1.5*joueur1.mise), joueur1.argent))
             dderejouer()
+    if croupier.valeursmain[0] == 11 and joueur1.blackjack == False:
+        while True:
+            takeinsurance=input ("\nLa première carte du croupier est un As ! Voulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ?" %(0.5*joueur1.mise))
+            if takeinsurance.lower() == "non":
+                input ("\nVous avez refusé l'assurance, appuyez sur Entrée pour continuer")
+                break
+            elif takeinsurance.lower() == "oui":
+                joueur1.assurance=True                    
+                break
+            else:
+                print("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
     else :
         while True:
             try:
