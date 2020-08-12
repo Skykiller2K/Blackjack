@@ -230,7 +230,7 @@ while joueur1.gameover == False:
             joueur1.argent += int(1.5*joueur1.mise)
             print ("\nVoici la main du croupier : %s. Bravo vous gagnez avec un BLACKJACK !\n\nVous remportez 1,5 fois votre mise soit %s euros, votre cagnotte est de %s euros" %(croupier.main, int(1.5*joueur1.mise), joueur1.argent))
             dderejouer()
-    if croupier.valeursmain[0] == 11 and joueur1.blackjack == False:
+    if croupier.valeursmain[0] == 11 :
         while True:
             takeinsurance=input ("\nLa première carte du croupier est un As ! Voulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
             if takeinsurance.lower() == "non":
