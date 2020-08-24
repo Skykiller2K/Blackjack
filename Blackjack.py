@@ -1,6 +1,7 @@
 import random
 import platform
 import os
+import sys
 
 def clean(p): # fonction pour effacer l'affichage de la console
     """p is system/OS name"""
@@ -14,8 +15,10 @@ def dderejouer ():
     while True :
         replay = input ("\nVoulez-vous rejouer ? ")
         if replay.lower() == "non":
+            joueur1.fintourdepioche=True
             joueur1.gameover = True
             print ("\nFin de partie")
+            sys.exit()
             break
         elif replay.lower() == "oui":
             joueur1.fintourdepioche=True
@@ -277,4 +280,5 @@ while joueur1.gameover == False:
                 print("""\nMauvaise saisine ! Saisissez "1" pour piocher une carte supplémentaire ou "2" pour rester""" )
         if joueur1.valeurtotalemain != 0 :
             croupier.pioche()
-    dderejouer()
+    if joueur1.valeurtotalemain != 0:
+        dderejouer()
