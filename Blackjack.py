@@ -199,7 +199,7 @@ while joueur1.gameover == False:
             joueur1.mise = int(joueur1.mise)
         except ValueError:
             clean(platform.system())
-            print ("\nErreur de saisine ! Veuillez saisir un nombre compris entre 0 (non inclus) et %s (montant de votre cagnotte)" %(joueur1.argent))
+            print ("\nErreur de saisine ! Veuillez saisir un nombre entier compris entre 0 (non inclus) et %s (montant de votre cagnotte)" %(joueur1.argent))
             continue
         if joueur1.mise > joueur1.argent:
             clean(platform.system())
