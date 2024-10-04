@@ -81,8 +81,8 @@ class Joueur (object):
             print("\nVous avez pioché la carte", cartepiochée[0])           
             if self.valeurtotalemain > 21 :
                 if self.assurance :
-                    self.argent -= 1.5*self.mise
-                    print ("\nCramé ! La valeur de votre main est de %s.\n\nVous avez perdu %s euros (les %s euros de votre mise + les %s euros de l'assurance), votre cagnotte est de %s euros." %(self.valeurtotalemain, 1.5*self.mise, self.mise, 0.5*self.mise, self.argent))
+                    self.argent -= int(1.5*self.mise)
+                    print ("\nCramé ! La valeur de votre main est de %s.\n\nVous avez perdu %s euros (les %s euros de votre mise + les %s euros de l'assurance), votre cagnotte est de %s euros." %(self.valeurtotalemain, int(1.5*self.mise), self.mise, int(0.5*self.mise), self.argent))
                     dderejouer()
                 else:
                     self.argent -= self.mise
