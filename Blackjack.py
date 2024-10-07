@@ -47,7 +47,7 @@ class Joueur (object):
         self.gameover = False
         self.fintourdepioche =  False
         self.blackjack = blackjack
-        self.assurance = assurance         
+        self.assurance = assurance     
     def majvaleurmain(self): 
         """ 
             Méthode qui actualise la valeur de la main après une pioche.
@@ -104,6 +104,10 @@ class Joueur (object):
                         break
                     else : 
                         print("""\nMauvaise saisine ! Saisissez "1" pour piocher une carte supplémentaire ou "2" pour rester""" )
+    def abandonner(self):
+        self.argent -= int(0.5*self.mise)
+        print ("\nVous perdez la moitié de votre mise soit %s euros, votre cagnotte est de %s euros" %(int(0.5*self.mise), self.argent))
+        dderejouer()
 
 class Banque (Joueur):
     def __init__(self): # A priori cette ligne et la suivante sont inutiles car la classe dérivée Banque n'a pas d'attribut en plus de ceux de la classe Joueur
@@ -223,7 +227,16 @@ while joueur1.gameover == False:
     if joueur1.blackjack:
         if croupier.valeursmain[0] == 11 :
             while True:
-                takeinsurance=input ("\nLa première carte du croupier est un As ! Voulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
+                choixabandon = input ("""\nLa première carte du croupier est un As ! Voulez-vous abandonner ? Vous perdrez la moitié de votre mise. Veuillez saisir "oui ou "non".""")
+                if choixabandon == "oui":
+                   joueur1.abandonner()
+                   break
+                elif choixabandon == "non":
+                    break
+                else:
+                    print ("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
+            while True and joueur1.abandonner == False:
+                takeinsurance=input ("\nVoulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
                 if takeinsurance.lower() == "non":
                     input ("\nVous avez refusé l'assurance, appuyez sur Entrée pour continuer")
                     break
@@ -264,6 +277,15 @@ while joueur1.gameover == False:
             print ("\nPerdu ! Le croupier a pioché les cartes %s et fait un BLACKJACK !\n\nVous perdez votre mise de %s euros, votre cagnotte est de %s euros" %(croupier.main, joueur1.mise, joueur1.argent))            
     if not joueur1.blackjack and not croupier.blackjack :
         while True:
+            choixabandon = input ("""\nVoulez-vous abandonner ? Vous perdrez la moitié de votre mise. Veuillez saisir "oui ou "non".""")
+            if choixabandon == "oui":
+                joueur1.abandonner()
+                break    
+            elif choixabandon == "non":
+                break
+            else:
+                print ("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
+        while True and joueur1.abandonner == False:
             try:
                 choixpioche=input ("\nVoulez-vous piocher une carte supplémentaire (1) ou rester (2) ? ")        
                 choixpioche = int(choixpioche)
