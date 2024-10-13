@@ -32,6 +32,7 @@ def dderejouer ():
             croupier.valeursmain=[]
             croupier.valeurtotalemain = 0 
             croupier.blackjack = False
+            choixabandon = "non"
             clean(platform.system())                      
             break
         else:
@@ -143,10 +144,10 @@ class Banque (Joueur):
             clean(platform.system())
             if joueur1.assurance:
                 joueur1.argent += int(0.5*joueur1.mise)
-                print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\nVous avez gagné %s euros (les %s euros de votre mise - les %s euros de l'assurance qui n'a pas été utilisée puisque le croupier n'a pas fait BLACKJACK), votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, int(0.5*joueur1.mise), joueur1.mise, int(0.5*joueur1.mise), joueur1.argent))
+                print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\n\nVous avez gagné %s euros (les %s euros de votre mise - les %s euros de l'assurance qui n'a pas été utilisée puisque le croupier n'a pas fait BLACKJACK), votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, int(0.5*joueur1.mise), joueur1.mise, int(0.5*joueur1.mise), joueur1.argent))
             else: 
                 joueur1.argent += joueur1.mise
-                print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\nVous avez gagné le montant de votre mise de %s euros, votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, joueur1.argent))                       
+                print ("Cramé ! La main du croupier %s est supérieure à 21 (%s), vous avez gagné !\n\nVous avez gagné le montant de votre mise de %s euros, votre cagnotte est de %s euros" %(self.main, self.valeurtotalemain, joueur1.mise, joueur1.argent))                       
         else:
             if self.valeurtotalemain < joueur1.valeurtotalemain :
                 clean(platform.system())
@@ -174,6 +175,7 @@ class Banque (Joueur):
         dderejouer()
 joueur1=Joueur()
 croupier=Banque()
+choixabandon = "non"
 
 clean(platform.system())
 print("Bienvenue dans le jeu du BlackJack")
@@ -224,19 +226,10 @@ while joueur1.gameover == False:
         input ("\nBLACKJACK ! Bravo la valeur de votre main est de 21 avec seulement 2 cartes ! Découvrons la main du croupier. Appuyez sur Entrée pour continuer ")
     if croupier.valeurtotalemain == 21 and len(croupier.main) == 2: 
         croupier.blackjack=True
-    if joueur1.blackjack:
+    if joueur1.blackjack and choixabandon == "non":
         if croupier.valeursmain[0] == 11 :
-            while True:
-                choixabandon = input ("""\nLa première carte du croupier est un As ! Voulez-vous abandonner ? Vous perdrez la moitié de votre mise. Veuillez saisir "oui ou "non".""")
-                if choixabandon == "oui":
-                   joueur1.abandonner()
-                   break
-                elif choixabandon == "non":
-                    break
-                else:
-                    print ("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
             while True and joueur1.abandonner == False:
-                takeinsurance=input ("\nVoulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
+                takeinsurance=input ("\nLa première carte du croupier est un As ! Voulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
                 if takeinsurance.lower() == "non":
                     input ("\nVous avez refusé l'assurance, appuyez sur Entrée pour continuer")
                     break
@@ -258,9 +251,18 @@ while joueur1.gameover == False:
             else:
                 joueur1.argent += int(1.5*joueur1.mise)
                 print ("\nVoici la main du croupier : %s. Bravo vous gagnez avec un BLACKJACK !\n\nVous remportez 1,5 fois votre mise soit %s euros, votre cagnotte est de %s euros" %(croupier.main, int(1.5*joueur1.mise), joueur1.argent))
-    if croupier.valeursmain[0] == 11 and not joueur1.blackjack :
+    if croupier.valeursmain[0] == 11 and not joueur1.blackjack and choixabandon == "non" :
         while True:
-            takeinsurance=input ("\nLa première carte du croupier est un As ! Voulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
+            choixabandon = input ("""\nLa première carte du croupier est un As ! Voulez-vous abandonner ? Vous perdrez la moitié de votre mise. Veuillez saisir "oui ou "non". """)
+            if choixabandon == "oui":
+                joueur1.abandonner()
+                break
+            elif choixabandon == "non":
+                break
+            else:
+                print ("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
+        while True and choixabandon == "non":
+            takeinsurance=input ("\nVoulez-vous prendre l'assurance pour %s euros (la moitié de votre mise) ? " %(int(0.5*joueur1.mise)))
             if takeinsurance.lower() == "non":
                 input ("\nVous avez refusé l'assurance, appuyez sur Entrée pour continuer")
                 break
@@ -269,15 +271,15 @@ while joueur1.gameover == False:
                 break
             else:
                 print("""\nMauvaise saisine, veuillez saisir "oui" ou "non".""")
-    if croupier.blackjack and not joueur1.blackjack :
+    if croupier.blackjack and not joueur1.blackjack and choixabandon == "non" :
         if joueur1.assurance:            
             print ("\nPerdu ! Le croupier a pioché les cartes %s et fait un BLACKJACK !\n\nComme vous avez pris l'assurance, vous ne perdez pas d'argent ! Votre cagnotte est de %s euros" %(croupier.main, joueur1.argent))
         else:           
             joueur1.argent -= joueur1.mise            
             print ("\nPerdu ! Le croupier a pioché les cartes %s et fait un BLACKJACK !\n\nVous perdez votre mise de %s euros, votre cagnotte est de %s euros" %(croupier.main, joueur1.mise, joueur1.argent))            
-    if not joueur1.blackjack and not croupier.blackjack :
+    if not joueur1.blackjack and not croupier.blackjack and choixabandon == "non" :
         while True:
-            choixabandon = input ("""\nVoulez-vous abandonner ? Vous perdrez la moitié de votre mise. Veuillez saisir "oui ou "non".""")
+            choixabandon = input ("""\nVoulez-vous abandonner ? Vous perdrez la moitié de votre mise. Veuillez saisir "oui ou "non". """)
             if choixabandon == "oui":
                 joueur1.abandonner()
                 break    
@@ -302,5 +304,5 @@ while joueur1.gameover == False:
                 print("""\nMauvaise saisine ! Saisissez "1" pour piocher une carte supplémentaire ou "2" pour rester""" )
         if joueur1.valeurtotalemain != 0 :
             croupier.pioche()
-    if joueur1.valeurtotalemain != 0:
+    if joueur1.valeurtotalemain != 0 and choixabandon == "non" :
         dderejouer()
